@@ -6,6 +6,29 @@
       <description>Updates for Votalink Responder - Hands-free call pickup for Votacall webapp</description>
       <language>en</language>
       <item>
+         <title>Version 1.0.5 - Appcast Cache Fix</title>
+         <pubDate>Thu, 13 Nov 2025 05:30:00 +0000</pubDate>
+         <sparkle:version>1.0.5</sparkle:version>
+         <sparkle:shortVersionString>1.0.5</sparkle:shortVersionString>
+         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.0.5/update-package-v1.0.5.zip" sparkle:version="1.0.5" length="59718986" type="application/zip" />
+         <description><![CDATA[
+            <h2>Version 1.0.5 - Appcast Cache Fix</h2>
+            <p><strong>Fixed appcast caching issue that prevented update detection</strong></p>
+            <h3>Bug Fixes:</h3>
+            <ul>
+               <li>Fixed issue where appcast cache prevented detection of new versions</li>
+               <li>Added cache clearing before update checks to ensure fresh appcast download</li>
+               <li>Improved update detection reliability</li>
+            </ul>
+            <h3>Technical Details:</h3>
+            <ul>
+               <li>NetSparkle was caching the appcast, causing stale version information</li>
+               <li>Update check now clears the cache before downloading, ensuring latest version is detected</li>
+               <li>Uses reflection to access and clear the private AppCastCache property</li>
+            </ul>
+         ]]></description>
+      </item>
+      <item>
          <title>Version 1.0.4 - ZIP Installation Handler</title>
          <pubDate>Thu, 13 Nov 2025 05:00:00 +0000</pubDate>
          <sparkle:version>1.0.4</sparkle:version>
@@ -148,4 +171,5 @@
       </item>
    </channel>
 </rss>
+
 
