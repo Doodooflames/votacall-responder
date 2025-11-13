@@ -32,6 +32,7 @@ namespace VotalinkResponder
         private int _safetyDelaySeconds = 0; // Safety delay to prevent accidental hang-ups
         private bool _delayAfterHangup = false; // If true, delay applies after hangup. If false, delay only applies after answer.
         private string? _customCallButtonPattern = null; // Custom hex pattern for call button detection
+        private bool _callButtonMode = true; // true = Call/Answer Button Mode, false = Volume Control Mode
 
         public event EventHandler<DeviceInfoEventArgs>? DeviceDetected;
         public event EventHandler<DeviceInfoEventArgs>? DeviceRemoved;
@@ -41,12 +42,13 @@ namespace VotalinkResponder
         // Expose WebSocketHub for extension connection form
         public WebSocketHub? GetWebSocketHub() => _ws;
 
-        public VotalinkResponderService(int wsPort, bool blockTeams, string? selectedDevicePath = null, bool skipLogFile = false, int safetyDelaySeconds = 0, bool delayAfterHangup = false, string? customCallButtonPattern = null)
+        public VotalinkResponderService(int wsPort, bool blockTeams, string? selectedDevicePath = null, bool skipLogFile = false, int safetyDelaySeconds = 0, bool delayAfterHangup = false, string? customCallButtonPattern = null, bool callButtonMode = true)
         {
             _blockTeams = blockTeams;
             _safetyDelaySeconds = safetyDelaySeconds;
             _delayAfterHangup = delayAfterHangup;
             _customCallButtonPattern = customCallButtonPattern;
+            _callButtonMode = callButtonMode;
             _ws = new WebSocketHub(wsPort);
             _ws.LogMessage += (s, msg) => LogMessage?.Invoke(this, msg); // Forward WebSocketHub logs
             _ws.ClientCountChanged += (s, count) => 
@@ -389,6 +391,21 @@ namespace VotalinkResponder
 
             if (!isNoise || isCallButton)
             {
+                // In volume control mode, apply safety delay to all HID broadcasts
+                // In call button mode, delay is already handled in BroadcastCallAnswer
+                if (!_callButtonMode && _safetyDelaySeconds > 0)
+                {
+                    double secondsSinceLastBroadcast = (DateTime.Now - _lastBroadcastTime).TotalSeconds;
+                    
+                    // Apply delay based on last broadcast time (prevents rapid button presses)
+                    if (secondsSinceLastBroadcast < _safetyDelaySeconds)
+                    {
+                        double remainingDelay = _safetyDelaySeconds - secondsSinceLastBroadcast;
+                        LogMessage?.Invoke(this, $"[VOLUME-CONTROL] Safety delay active - ignoring button press ({remainingDelay:F1}s remaining)");
+                        return;
+                    }
+                }
+                
                 var payload = "{" +
                               "\"type\":\"direct-hid\"," +
                               "\"at\":" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + "," +
@@ -397,6 +414,12 @@ namespace VotalinkResponder
                               "\"dataHex\":\"" + hex + "\"," +
                               "\"path\":\"" + report.DevicePath.Replace("\\", "\\\\").Replace("\"", "'") + "\"}";
                 _ws.Broadcast(payload);
+                
+                // Update last broadcast time for delay tracking in volume control mode
+                if (!_callButtonMode)
+                {
+                    _lastBroadcastTime = DateTime.Now;
+                }
             }
 
             if (isCallButton || (!isNoise && !_isCollectingNoise))

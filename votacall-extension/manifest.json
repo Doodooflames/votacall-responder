@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Votalink Responder Extension",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Automatically answers calls in Votacall webapp when headset button is pressed",
   "permissions": [
     "activeTab",

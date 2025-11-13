@@ -551,7 +551,7 @@
             // We'll use a hash of background.js content as a unique identifier
             const extensionFingerprint = {
                 name: 'Votalink Responder Extension', // Must match manifest.json name
-                version: '1.0.8', // Must match manifest.json version
+                version: '1.0.9', // Must match manifest.json version
                 fileHash: null // Hash of background.js for identification
             };
             

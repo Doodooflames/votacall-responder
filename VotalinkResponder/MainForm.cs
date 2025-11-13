@@ -340,7 +340,11 @@ namespace VotalinkResponder
                 {
                     _config.CallButtonMode = true;
                     _config.Save();
-                    ShowSafetyDelayPanel();
+                    // Ensure safety delay panel is visible
+                    if (_safetyDelayPanel != null)
+                    {
+                        _safetyDelayPanel.Visible = true;
+                    }
                 }
             };
 
@@ -361,14 +365,18 @@ namespace VotalinkResponder
                 {
                     _config.CallButtonMode = false;
                     _config.Save();
-                    HideSafetyDelayPanel();
+                    // Ensure safety delay panel is visible
+                    if (_safetyDelayPanel != null)
+                    {
+                        _safetyDelayPanel.Visible = true;
+                    }
                 }
             };
 
             modePanel.Controls.Add(_callButtonModeRadio);
             modePanel.Controls.Add(_volumeButtonModeRadio);
             
-            // Safety Delay Panel (only shown when Call/Answer Button Mode is selected)
+            // Safety Delay Panel (shown in both modes now)
             _safetyDelayPanel = new Panel
             {
                 Dock = DockStyle.Top,
@@ -376,7 +384,7 @@ namespace VotalinkResponder
                 BackColor = Color.FromArgb(45, 50, 60),
                 Padding = new Padding(10, 10, 10, 10),
                 Margin = new Padding(0, 0, 0, 20),
-                Visible = _config.CallButtonMode
+                Visible = true // Always visible now for both modes
             };
             
             _safetyDelayLabel = new Label
@@ -407,7 +415,7 @@ namespace VotalinkResponder
             
             var safetyDelayDescLabel = new Label
             {
-                Text = "Prevents accidental call hang-ups",
+                Text = "Prevents accidental call hang-ups (applies to both modes)",
                 Font = new Font("Segoe UI", 8),
                 ForeColor = Color.FromArgb(180, 180, 190),
                 Location = new Point(10, 32),
@@ -434,22 +442,6 @@ namespace VotalinkResponder
             _safetyDelayPanel.Controls.Add(_safetyDelayInput);
             _safetyDelayPanel.Controls.Add(safetyDelayDescLabel);
             _safetyDelayPanel.Controls.Add(_delayAfterHangupCheckbox);
-            
-            void ShowSafetyDelayPanel()
-            {
-                if (_safetyDelayPanel != null)
-                {
-                    _safetyDelayPanel.Visible = true;
-                }
-            }
-            
-            void HideSafetyDelayPanel()
-            {
-                if (_safetyDelayPanel != null)
-                {
-                    _safetyDelayPanel.Visible = false;
-                }
-            }
 
             // Settings Section
             var settingsSectionLabel = new Label
@@ -1172,16 +1164,16 @@ namespace VotalinkResponder
                 bool blockTeams = _blockTeamsCheckbox.Checked;
 
                 // Use selected interface
-                int safetyDelay = _config.CallButtonMode && _safetyDelayInput != null 
+                int safetyDelay = _safetyDelayInput != null 
                     ? (int)_safetyDelayInput.Value 
                     : 0;
-                bool delayAfterHangup = _config.CallButtonMode && _delayAfterHangupCheckbox != null
+                bool delayAfterHangup = _delayAfterHangupCheckbox != null
                     ? _delayAfterHangupCheckbox.Checked
                     : false;
                 string? customPattern = string.IsNullOrWhiteSpace(_config.CustomCallButtonPattern) 
                     ? null 
                     : _config.CustomCallButtonPattern.Trim();
-                _service = new VotalinkResponderService(port, blockTeams, selectedDevice.DevicePath, skipLogFile: false, safetyDelaySeconds: safetyDelay, delayAfterHangup: delayAfterHangup, customCallButtonPattern: customPattern);
+                _service = new VotalinkResponderService(port, blockTeams, selectedDevice.DevicePath, skipLogFile: false, safetyDelaySeconds: safetyDelay, delayAfterHangup: delayAfterHangup, customCallButtonPattern: customPattern, callButtonMode: _config.CallButtonMode);
                 _service.DeviceDetected += Service_DeviceDetected;
                 _service.DeviceRemoved += Service_DeviceRemoved;
                 _service.LogMessage += Service_LogMessage;
@@ -1327,6 +1319,11 @@ namespace VotalinkResponder
         {
             _wsPortInput.Value = _config.WebSocketPort;
             _blockTeamsCheckbox.Checked = _config.BlockTeams;
+            // Ensure safety delay panel is always visible
+            if (_safetyDelayPanel != null)
+            {
+                _safetyDelayPanel.Visible = true;
+            }
             if (_customCallButtonPatternInput != null)
             {
                 _customCallButtonPatternInput.Text = _config.CustomCallButtonPattern ?? "";
