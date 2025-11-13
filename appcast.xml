@@ -5,15 +5,34 @@
       <link>https://github.com/Doodooflames/votacall-responder</link>
       <description>Updates for Votalink Responder - Hands-free call pickup for Votacall webapp</description>
       <language>en</language>
-      <!-- 
-         Initial appcast.xml - no updates available yet.
-         When you create your first release, add an <item> entry here with:
-         - <title>Version X.X.X</title>
-         - <pubDate>RFC822 date</pubDate>
-         - <sparkle:version>X.X.X</sparkle:version>
-         - <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/vX.X.X/update-package-vX.X.X.zip" sparkle:version="X.X.X" type="application/zip" />
-         - <description><![CDATA[Release notes in HTML]]></description>
-      -->
+      <item>
+         <title>Version 1.0.0 - Initial Release</title>
+         <pubDate>Thu, 13 Nov 2025 02:44:16 +0000</pubDate>
+         <sparkle:version>1.0.0</sparkle:version>
+         <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
+         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.0.0/update-package-v1.0.0.zip" sparkle:version="1.0.0" length="59711241" type="application/zip" />
+         <description><![CDATA[
+            <h2>Version 1.0.0 - Initial Release</h2>
+            <p><strong>Initial release of Votalink Responder</strong></p>
+            <h3>Features:</h3>
+            <ul>
+               <li>HID device monitoring for Yealink WH64 headsets</li>
+               <li>Automatic call answer/hang-up via headset button press</li>
+               <li>Browser extension integration for Votacall webapp</li>
+               <li>WebSocket communication between app and extension</li>
+               <li>Configurable call button pattern matching</li>
+               <li>Safety delay to prevent accidental actions</li>
+               <li>System tray support (close to tray)</li>
+               <li>Auto-update system via GitHub releases</li>
+            </ul>
+            <h3>Requirements:</h3>
+            <ul>
+               <li>Windows 7 or later</li>
+               <li>Yealink WH64 headset (or compatible HID device)</li>
+               <li>Chrome/Edge browser with Votalink extension installed</li>
+            </ul>
+         ]]></description>
+      </item>
    </channel>
 </rss>
 
