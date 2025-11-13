@@ -6,6 +6,37 @@
       <description>Updates for Votalink Responder - Hands-free call pickup for Votacall webapp</description>
       <language>en</language>
       <item>
+         <title>Version 1.0.3 - Update Installation Fixes</title>
+         <pubDate>Thu, 13 Nov 2025 04:30:00 +0000</pubDate>
+         <sparkle:version>1.0.3</sparkle:version>
+         <sparkle:shortVersionString>1.0.3</sparkle:shortVersionString>
+         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.0.3/update-package-v1.0.3.zip" sparkle:version="1.0.3" length="59720000" type="application/zip" />
+         <description><![CDATA[
+            <h2>Version 1.0.3 - Update Installation Fixes</h2>
+            <p><strong>Improved update installation with permission checks</strong></p>
+            <h3>Bug Fixes:</h3>
+            <ul>
+               <li>Added permission checking before update installation</li>
+               <li>Warns users if executable directory is not writable</li>
+               <li>Provides clear instructions when update installation may fail</li>
+               <li>Enhanced logging for update installation diagnostics</li>
+            </ul>
+            <h3>Improvements:</h3>
+            <ul>
+               <li>Checks directory write permissions before attempting update</li>
+               <li>Shows warning dialog with solutions if permissions are insufficient</li>
+               <li>Logs detailed information about executable path and permissions</li>
+               <li>Added tooltip to update button with troubleshooting info</li>
+            </ul>
+            <h3>Important Notes:</h3>
+            <ul>
+               <li>If update installation fails, try running the app as Administrator</li>
+               <li>Alternatively, move the app to a writable location (e.g., Documents folder)</li>
+               <li>Check the log file at %APPDATA%\VotalinkResponder\netsparkle.log for details</li>
+            </ul>
+         ]]></description>
+      </item>
+      <item>
          <title>Version 1.0.2 - Bug Fixes and Performance Improvements</title>
          <pubDate>Thu, 13 Nov 2025 04:00:00 +0000</pubDate>
          <sparkle:version>1.0.2</sparkle:version>
