@@ -6,6 +6,29 @@
       <description>Updates for Votalink Responder - Hands-free call pickup for Votacall webapp</description>
       <language>en</language>
       <item>
+         <title>Version 1.0.1 - Auto-detect Extension Path</title>
+         <pubDate>Thu, 13 Nov 2025 03:30:00 +0000</pubDate>
+         <sparkle:version>1.0.1</sparkle:version>
+         <sparkle:shortVersionString>1.0.1</sparkle:shortVersionString>
+         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.0.1/update-package-v1.0.1.zip" sparkle:version="1.0.1" length="59714779" type="application/zip" />
+         <description><![CDATA[
+            <h2>Version 1.0.1 - Auto-detect Extension Path</h2>
+            <p><strong>Update with automatic extension folder detection</strong></p>
+            <h3>New Features:</h3>
+            <ul>
+               <li>Automatic extension folder path detection when extension connects</li>
+               <li>Smart search for extension folder using unique marker</li>
+               <li>Auto-saves extension path to config for update system</li>
+            </ul>
+            <h3>Improvements:</h3>
+            <ul>
+               <li>Extension now sends fingerprint for path detection</li>
+               <li>App searches common locations first for faster detection</li>
+               <li>Falls back to broader search if not found in common locations</li>
+            </ul>
+         ]]></description>
+      </item>
+      <item>
          <title>Version 1.0.0 - Initial Release</title>
          <pubDate>Thu, 13 Nov 2025 02:44:16 +0000</pubDate>
          <sparkle:version>1.0.0</sparkle:version>
