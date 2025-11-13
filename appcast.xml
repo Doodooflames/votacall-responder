@@ -10,7 +10,7 @@
          <pubDate>Thu, 13 Nov 2025 05:00:00 +0000</pubDate>
          <sparkle:version>1.0.4</sparkle:version>
          <sparkle:shortVersionString>1.0.4</sparkle:shortVersionString>
-         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.0.4/update-package-v1.0.4.zip" sparkle:version="1.0.4" length="59720000" type="application/zip" />
+         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.0.4/update-package-v1.0.4.zip" sparkle:version="1.0.4" length="59718705" type="application/zip" />
          <description><![CDATA[
             <h2>Version 1.0.4 - ZIP Installation Handler</h2>
             <p><strong>Fixed update installation with custom ZIP handler</strong></p>
