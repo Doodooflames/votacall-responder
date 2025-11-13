@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
+   <channel>
+      <title>Votalink Responder Updates</title>
+      <link>https://github.com/Doodooflames/votacall-responder</link>
+      <description>Updates for Votalink Responder - Hands-free call pickup for Votacall webapp</description>
+      <language>en</language>
+      <!-- 
+         Initial appcast.xml - no updates available yet.
+         When you create your first release, add an <item> entry here with:
+         - <title>Version X.X.X</title>
+         - <pubDate>RFC822 date</pubDate>
+         - <sparkle:version>X.X.X</sparkle:version>
+         - <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/vX.X.X/update-package-vX.X.X.zip" sparkle:version="X.X.X" type="application/zip" />
+         - <description><![CDATA[Release notes in HTML]]></description>
+      -->
+   </channel>
+</rss>
+
