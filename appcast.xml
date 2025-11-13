@@ -6,6 +6,35 @@
       <description>Updates for Votalink Responder - Hands-free call pickup for Votacall webapp</description>
       <language>en</language>
       <item>
+         <title>Version 1.0.2 - Bug Fixes and Performance Improvements</title>
+         <pubDate>Thu, 13 Nov 2025 04:00:00 +0000</pubDate>
+         <sparkle:version>1.0.2</sparkle:version>
+         <sparkle:shortVersionString>1.0.2</sparkle:shortVersionString>
+         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.0.2/update-package-v1.0.2.zip" sparkle:version="1.0.2" length="59720000" type="application/zip" />
+         <description><![CDATA[
+            <h2>Version 1.0.2 - Bug Fixes and Performance Improvements</h2>
+            <p><strong>Stable release with critical fixes</strong></p>
+            <h3>Bug Fixes:</h3>
+            <ul>
+               <li>Fixed message listener registration issue that prevented extension from receiving button press commands</li>
+               <li>Fixed "Could not establish connection. Receiving end does not exist" error</li>
+               <li>Improved content script initialization and message handling</li>
+            </ul>
+            <h3>Performance Improvements:</h3>
+            <ul>
+               <li>Added DEBUG_MODE flag to disable verbose logging in production</li>
+               <li>Reduced console logging overhead for better performance</li>
+               <li>Optimized message handling and button detection</li>
+            </ul>
+            <h3>Other Improvements:</h3>
+            <ul>
+               <li>Added version number display in main application window title and status bar</li>
+               <li>Enhanced error handling and logging throughout extension</li>
+               <li>Improved extension path auto-detection reliability</li>
+            </ul>
+         ]]></description>
+      </item>
+      <item>
          <title>Version 1.0.1 - Auto-detect Extension Path</title>
          <pubDate>Thu, 13 Nov 2025 03:30:00 +0000</pubDate>
          <sparkle:version>1.0.1</sparkle:version>
