@@ -6,6 +6,36 @@
       <description>Updates for Votalink Responder - Hands-free call pickup for Votacall webapp</description>
       <language>en</language>
       <item>
+         <title>Version 1.0.4 - ZIP Installation Handler</title>
+         <pubDate>Thu, 13 Nov 2025 05:00:00 +0000</pubDate>
+         <sparkle:version>1.0.4</sparkle:version>
+         <sparkle:shortVersionString>1.0.4</sparkle:shortVersionString>
+         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.0.4/update-package-v1.0.4.zip" sparkle:version="1.0.4" length="59720000" type="application/zip" />
+         <description><![CDATA[
+            <h2>Version 1.0.4 - ZIP Installation Handler</h2>
+            <p><strong>Fixed update installation with custom ZIP handler</strong></p>
+            <h3>Bug Fixes:</h3>
+            <ul>
+               <li>Created custom SparkleUpdater that properly handles ZIP file extraction on Windows</li>
+               <li>Fixed silent installation failures - ZIP files are now extracted and EXE is copied correctly</li>
+               <li>Added PowerShell-based extraction and file copying for ZIP updates</li>
+               <li>Improved error handling and logging for installation failures</li>
+            </ul>
+            <h3>Technical Details:</h3>
+            <ul>
+               <li>NetSparkle on Windows doesn't natively support ZIP files (only .exe, .msi, .msp)</li>
+               <li>Custom updater now generates PowerShell commands to extract ZIP and copy files</li>
+               <li>Installation process now properly extracts update package and replaces executable</li>
+            </ul>
+            <h3>Important Notes:</h3>
+            <ul>
+               <li>If update installation still fails, check %TEMP% for the batch script file (*.cmd)</li>
+               <li>Ensure the app directory is writable or run as Administrator</li>
+               <li>Check the log file at %APPDATA%\VotalinkResponder\netsparkle.log for details</li>
+            </ul>
+         ]]></description>
+      </item>
+      <item>
          <title>Version 1.0.3 - Update Installation Fixes</title>
          <pubDate>Thu, 13 Nov 2025 04:30:00 +0000</pubDate>
          <sparkle:version>1.0.3</sparkle:version>
