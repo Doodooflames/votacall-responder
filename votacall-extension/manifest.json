@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "Votalink Responder Extension",
+  "version": "1.0.8",
+  "description": "Automatically answers calls in Votacall webapp when headset button is pressed",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "notifications",
+    "tabs",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://myvotacall.com/*",
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Votalink Responder"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://myvotacall.com/webphone/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icon16.png", "icon48.png", "icon128.png"],
+      "matches": []
+    }
+  ]
+}
+
