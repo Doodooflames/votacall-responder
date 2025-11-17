@@ -6,6 +6,45 @@
       <description>Updates for Votalink Responder - Hands-free call pickup for Votacall webapp</description>
       <language>en</language>
       <item>
+         <title>Version 1.1.1 - Setup Wizard and UI Fixes</title>
+         <pubDate>Sun, 17 Nov 2025 12:00:00 +0000</pubDate>
+         <sparkle:version>1.1.1</sparkle:version>
+         <sparkle:shortVersionString>1.1.1</sparkle:shortVersionString>
+         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.1.1/update-package-v1.1.1.zip" sparkle:version="1.1.1" length="59831048" type="application/zip" />
+         <description><![CDATA[
+            <h2>Version 1.1.1 - Setup Wizard and UI Fixes</h2>
+            <p><strong>Bug fixes and UI improvements for setup wizard and settings dialog</strong></p>
+            <h3>Bug Fixes:</h3>
+            <ul>
+               <li>Fixed crash when closing setup wizard before completing setup</li>
+               <li>Fixed console window auto-opening on startup despite "Show console" setting being off</li>
+               <li>Fixed checkmark selection issue in Step 3 - only one interface card shows checkmark at a time</li>
+               <li>Fixed taskbar icon not using custom favicon.ico</li>
+            </ul>
+            <h3>UI Improvements:</h3>
+            <ul>
+               <li>Fixed spacing in Settings dialog - "Settings" title no longer overlaps "Button Mode:" section</li>
+               <li>Fixed Step 4 spacing - description text no longer overlaps extension cards</li>
+               <li>Improved Step 3 interface selection - all interfaces show immediately with proper categorization</li>
+               <li>Enhanced checkmark removal logic - ensures only selected card shows checkmark</li>
+            </ul>
+            <h3>Setup Wizard Improvements:</h3>
+            <ul>
+               <li>Added graceful handling when user cancels setup - shows message for new installs, allows closing for existing configs</li>
+               <li>Fixed blank screen delay in Step 3 - all interfaces now display immediately</li>
+               <li>Improved interface categorization - unknown interfaces now properly displayed</li>
+               <li>Optimized card loading with batched layout operations for faster rendering</li>
+            </ul>
+            <h3>Technical Details:</h3>
+            <ul>
+               <li>Added null checks and error handling in setup wizard cleanup methods</li>
+               <li>Fixed form Icon property to use custom favicon.ico for taskbar display</li>
+               <li>Improved checkmark visibility management with recursive search through all controls</li>
+               <li>Added proper spacing calculations for dynamic content in dialogs</li>
+            </ul>
+         ]]></description>
+      </item>
+      <item>
          <title>Version 1.1.0 - Settings UI Improvements</title>
          <pubDate>Sun, 17 Nov 2025 10:28:00 +0000</pubDate>
          <sparkle:version>1.1.0</sparkle:version>
