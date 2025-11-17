@@ -6,6 +6,38 @@
       <description>Updates for Votalink Responder - Hands-free call pickup for Votacall webapp</description>
       <language>en</language>
       <item>
+         <title>Version 1.1.6 - Update Dialog Button Fix</title>
+         <pubDate>Sun, 17 Nov 2025 17:00:00 +0000</pubDate>
+         <sparkle:version>1.1.6</sparkle:version>
+         <sparkle:shortVersionString>1.1.6</sparkle:shortVersionString>
+         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.1.6/update-package-v1.1.6.zip" sparkle:version="1.1.6" length="59832629" type="application/zip" />
+         <description><![CDATA[
+            <h2>Version 1.1.6 - Update Dialog Button Fix</h2>
+            <p><strong>Fixed missing buttons in update installation dialog</strong></p>
+            <h3>Bug Fixes:</h3>
+            <ul>
+               <li>Fixed update installation dialog not showing Yes/No buttons</li>
+               <li>Buttons were present but not visible due to incorrect positioning</li>
+               <li>Users had to press Enter to proceed - now buttons are clearly visible and clickable</li>
+               <li>Improved button positioning with dynamic calculation based on panel size</li>
+            </ul>
+            <h3>Improvements:</h3>
+            <ul>
+               <li>Added dynamic button positioning that adapts to dialog size</li>
+               <li>Buttons now properly centered and aligned in the dialog</li>
+               <li>Increased button panel height for better visibility</li>
+               <li>Added resize handler to maintain button positions when dialog resizes</li>
+            </ul>
+            <h3>Technical Details:</h3>
+            <ul>
+               <li>Replaced static button positioning with dynamic UpdateButtonPositions() method</li>
+               <li>Added Resize event handler to reposition buttons when panel size changes</li>
+               <li>Changed button anchor from Bottom|Right to None for manual positioning</li>
+               <li>Buttons now calculate position based on panel width and height dynamically</li>
+            </ul>
+         ]]></description>
+      </item>
+      <item>
          <title>Version 1.1.5 - Minimize Behavior Fix and Exit Button</title>
          <pubDate>Sun, 17 Nov 2025 16:00:00 +0000</pubDate>
          <sparkle:version>1.1.5</sparkle:version>
