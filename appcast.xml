@@ -6,6 +6,37 @@
       <description>Updates for Votalink Responder - Hands-free call pickup for Votacall webapp</description>
       <language>en</language>
       <item>
+         <title>Version 1.1.4 - Install Dialog Always On Top</title>
+         <pubDate>Sun, 17 Nov 2025 15:00:00 +0000</pubDate>
+         <sparkle:version>1.1.4</sparkle:version>
+         <sparkle:shortVersionString>1.1.4</sparkle:shortVersionString>
+         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.1.4/update-package-v1.1.4.zip" sparkle:version="1.1.4" length="59831989" type="application/zip" />
+         <description><![CDATA[
+            <h2>Version 1.1.4 - Install Dialog Always On Top</h2>
+            <p><strong>Install update dialog now always stays on top, even when user clicks back onto the app</strong></p>
+            <h3>Bug Fixes:</h3>
+            <ul>
+               <li>Fixed install update confirmation dialog disappearing behind main window when user clicks back</li>
+               <li>Install dialog now uses TopMost property to ensure it stays above all windows</li>
+               <li>Dialog remains visible and accessible even if user interacts with the main application</li>
+            </ul>
+            <h3>Improvements:</h3>
+            <ul>
+               <li>Created custom TopMostMessageBox dialog for critical update confirmations</li>
+               <li>Better user experience - users can't accidentally lose the update dialog</li>
+               <li>Dialog automatically brings itself to front if it loses focus</li>
+               <li>Matches application's dark theme styling</li>
+            </ul>
+            <h3>Technical Details:</h3>
+            <ul>
+               <li>Added TopMostMessageBox.cs - custom dialog form with TopMost = true</li>
+               <li>Replaced MessageBox.Show with TopMostMessageBox.Show for install confirmation</li>
+               <li>Dialog handles OnLoad, OnShown, and OnActivated events to maintain topmost state</li>
+               <li>Supports YesNo, OK, and OKCancel button configurations</li>
+            </ul>
+         ]]></description>
+      </item>
+      <item>
          <title>Version 1.1.3 - Update Dialog On-Top Fix</title>
          <pubDate>Sun, 17 Nov 2025 14:00:00 +0000</pubDate>
          <sparkle:version>1.1.3</sparkle:version>
