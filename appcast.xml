@@ -6,6 +6,44 @@
       <description>Updates for Votalink Responder - Hands-free call pickup for Votacall webapp</description>
       <language>en</language>
       <item>
+         <title>Version 1.1.5 - Minimize Behavior Fix and Exit Button</title>
+         <pubDate>Sun, 17 Nov 2025 16:00:00 +0000</pubDate>
+         <sparkle:version>1.1.5</sparkle:version>
+         <sparkle:shortVersionString>1.1.5</sparkle:shortVersionString>
+         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.1.5/update-package-v1.1.5.zip" sparkle:version="1.1.5" length="59832233" type="application/zip" />
+         <description><![CDATA[
+            <h2>Version 1.1.5 - Minimize Behavior Fix and Exit Button</h2>
+            <p><strong>Fixed minimize behavior, added multiple instance prevention, and added Exit button</strong></p>
+            <h3>Bug Fixes:</h3>
+            <ul>
+               <li>Fixed "Close to system tray" also hiding window when minimized - now only hides on close button</li>
+               <li>Minimized windows now stay in taskbar as expected</li>
+               <li>Prevented multiple instances from running simultaneously (prevents WebSocket conflicts)</li>
+               <li>Added helpful message when user tries to start a second instance</li>
+            </ul>
+            <h3>New Features:</h3>
+            <ul>
+               <li>Added "✕ Exit" button in top right corner of status bar</li>
+               <li>Exit button always exits the application, even when "Close to system tray" is enabled</li>
+               <li>Makes it easier for users to actually exit the app when tray mode is enabled</li>
+            </ul>
+            <h3>Improvements:</h3>
+            <ul>
+               <li>Better user experience - users can minimize without losing the window</li>
+               <li>Clear instructions when trying to start duplicate instance (tells user to check system tray)</li>
+               <li>Exit button styled with red/orange color to clearly indicate exit action</li>
+               <li>Prevents WebSocket port conflicts from multiple instances</li>
+            </ul>
+            <h3>Technical Details:</h3>
+            <ul>
+               <li>Removed minimize-to-tray logic from OnResize event handler</li>
+               <li>Added Mutex-based single instance check in Program.cs</li>
+               <li>Added ExitButton_Click handler that uses Application.Exit() to bypass CloseToTray logic</li>
+               <li>Exit button positioned in top right with Anchor property for proper resizing</li>
+            </ul>
+         ]]></description>
+      </item>
+      <item>
          <title>Version 1.1.4 - Install Dialog Always On Top</title>
          <pubDate>Sun, 17 Nov 2025 15:00:00 +0000</pubDate>
          <sparkle:version>1.1.4</sparkle:version>
