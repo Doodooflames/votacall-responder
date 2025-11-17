@@ -6,6 +6,37 @@
       <description>Updates for Votalink Responder - Hands-free call pickup for Votacall webapp</description>
       <language>en</language>
       <item>
+         <title>Version 1.1.3 - Update Dialog On-Top Fix</title>
+         <pubDate>Sun, 17 Nov 2025 14:00:00 +0000</pubDate>
+         <sparkle:version>1.1.3</sparkle:version>
+         <sparkle:shortVersionString>1.1.3</sparkle:shortVersionString>
+         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.1.3/update-package-v1.1.3.zip" sparkle:version="1.1.3" length="59831349" type="application/zip" />
+         <description><![CDATA[
+            <h2>Version 1.1.3 - Update Dialog On-Top Fix</h2>
+            <p><strong>Fixed update dialogs appearing behind the main window</strong></p>
+            <h3>Bug Fixes:</h3>
+            <ul>
+               <li>Fixed update dialog appearing behind the main application window</li>
+               <li>Update confirmation dialogs now properly appear on top of the main form</li>
+               <li>Installation warning dialogs now properly appear on top of the main form</li>
+               <li>All update-related MessageBox dialogs now use the main form as owner window</li>
+            </ul>
+            <h3>Improvements:</h3>
+            <ul>
+               <li>Better user experience when updates are detected - dialogs are immediately visible</li>
+               <li>Users no longer need to manually bring update dialogs to the front</li>
+               <li>Consistent dialog behavior across all update-related prompts</li>
+            </ul>
+            <h3>Technical Details:</h3>
+            <ul>
+               <li>Updated all MessageBox.Show calls in UpdateManager to use owner window parameter</li>
+               <li>Fixed main update detection dialog to appear on top</li>
+               <li>Fixed installation confirmation dialog to appear on top</li>
+               <li>Fixed directory writable warning dialog to appear on top</li>
+            </ul>
+         ]]></description>
+      </item>
+      <item>
          <title>Version 1.1.2 - Remap Dialog Filtering Fix</title>
          <pubDate>Sun, 17 Nov 2025 13:00:00 +0000</pubDate>
          <sparkle:version>1.1.2</sparkle:version>
