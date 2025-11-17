@@ -6,6 +6,40 @@
       <description>Updates for Votalink Responder - Hands-free call pickup for Votacall webapp</description>
       <language>en</language>
       <item>
+         <title>Version 1.1.0 - Settings UI Improvements</title>
+         <pubDate>Sun, 17 Nov 2025 10:28:00 +0000</pubDate>
+         <sparkle:version>1.1.0</sparkle:version>
+         <sparkle:shortVersionString>1.1.0</sparkle:shortVersionString>
+         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.1.0/update-package-v1.1.0.zip" sparkle:version="1.1.0" length="59729837" type="application/zip" />
+         <description><![CDATA[
+            <h2>Version 1.1.0 - Settings UI Improvements</h2>
+            <p><strong>Enhanced Settings dialog with manual update check and improved layout</strong></p>
+            <h3>New Features:</h3>
+            <ul>
+               <li>Added manual "Check for Updates" button in Settings panel</li>
+               <li>Button provides visual feedback during update check (shows "Checking..." state)</li>
+               <li>Improved button visibility with refresh icon and bold styling</li>
+            </ul>
+            <h3>UI Improvements:</h3>
+            <ul>
+               <li>Optimized Settings dialog layout to fit all content without scrolling</li>
+               <li>Reduced panel heights and spacing for better space utilization</li>
+               <li>Moved Updates section to more prominent position (before Display Options)</li>
+               <li>Removed unnecessary scrollbars - all settings now visible at once</li>
+               <li>Improved visual hierarchy with better spacing and sizing</li>
+            </ul>
+            <h3>Technical Details:</h3>
+            <ul>
+               <li>Settings dialog height optimized from 700px to 680px</li>
+               <li>Network panel: 180px → 160px height</li>
+               <li>Extension panel: 200px → 180px height</li>
+               <li>Updates panel: 120px → 100px height</li>
+               <li>Display panel: 80px → 70px height</li>
+               <li>Reduced spacing between panels for compact layout</li>
+            </ul>
+         ]]></description>
+      </item>
+      <item>
          <title>Version 1.0.5 - Appcast Cache Fix</title>
          <pubDate>Thu, 13 Nov 2025 05:30:00 +0000</pubDate>
          <sparkle:version>1.0.5</sparkle:version>
