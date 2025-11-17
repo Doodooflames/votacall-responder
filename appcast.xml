@@ -6,6 +6,36 @@
       <description>Updates for Votalink Responder - Hands-free call pickup for Votacall webapp</description>
       <language>en</language>
       <item>
+         <title>Version 1.1.2 - Remap Dialog Filtering Fix</title>
+         <pubDate>Sun, 17 Nov 2025 13:00:00 +0000</pubDate>
+         <sparkle:version>1.1.2</sparkle:version>
+         <sparkle:shortVersionString>1.1.2</sparkle:shortVersionString>
+         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.1.2/update-package-v1.1.2.zip" sparkle:version="1.1.2" length="59831177" type="application/zip" />
+         <description><![CDATA[
+            <h2>Version 1.1.2 - Remap Dialog Filtering Fix</h2>
+            <p><strong>Fixed remap dialog filtering logic when all codes are shared</strong></p>
+            <h3>Bug Fixes:</h3>
+            <ul>
+               <li>Fixed remap dialog incorrectly using all call button codes when all codes were filtered out</li>
+               <li>Now correctly shows "None (all codes shared)" when no unique pattern is found</li>
+               <li>Disables "Confirm & Apply" button when no valid pattern is detected</li>
+               <li>Shows clear warning message when all codes are shared between call button and other buttons</li>
+            </ul>
+            <h3>Improvements:</h3>
+            <ul>
+               <li>Better user feedback when remapping fails to find unique pattern</li>
+               <li>Prevents applying invalid patterns that would match all buttons</li>
+               <li>Clear instructions to retry with different buttons in Step 2</li>
+            </ul>
+            <h3>Technical Details:</h3>
+            <ul>
+               <li>Removed incorrect fallback that used all call button codes when filtering removed everything</li>
+               <li>Now sets pattern to null when no unique codes remain after filtering</li>
+               <li>Added validation to prevent applying null/empty patterns</li>
+            </ul>
+         ]]></description>
+      </item>
+      <item>
          <title>Version 1.1.1 - Setup Wizard and UI Fixes</title>
          <pubDate>Sun, 17 Nov 2025 12:00:00 +0000</pubDate>
          <sparkle:version>1.1.1</sparkle:version>
