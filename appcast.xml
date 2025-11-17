@@ -6,6 +6,18 @@
       <description>Updates for Votalink Responder - Hands-free call pickup for Votacall webapp</description>
       <language>en</language>
       <item>
+         <title>Version 1.1.9 - Test Release</title>
+         <pubDate>Sun, 17 Nov 2025 20:00:00 +0000</pubDate>
+         <sparkle:version>1.1.9</sparkle:version>
+         <sparkle:shortVersionString>1.1.9</sparkle:shortVersionString>
+         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.1.9/update-package-v1.1.9.zip" sparkle:version="1.1.9" length="59832652" type="application/zip" />
+         <description><![CDATA[
+            <h2>Version 1.1.9 - Test Release</h2>
+            <p><strong>⚠️ TEST RELEASE - For testing purposes only ⚠️</strong></p>
+            <p>This is a test release to verify the update system is working correctly.</p>
+         ]]></description>
+      </item>
+      <item>
          <title>Version 1.1.8 - Update Dialog Instruction Text</title>
          <pubDate>Sun, 17 Nov 2025 19:00:00 +0000</pubDate>
          <sparkle:version>1.1.8</sparkle:version>
