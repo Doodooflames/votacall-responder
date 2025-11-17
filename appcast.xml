@@ -6,6 +6,43 @@
       <description>Updates for Votalink Responder - Hands-free call pickup for Votacall webapp</description>
       <language>en</language>
       <item>
+         <title>Version 1.1.8 - Update Dialog Instruction Text</title>
+         <pubDate>Sun, 17 Nov 2025 19:00:00 +0000</pubDate>
+         <sparkle:version>1.1.8</sparkle:version>
+         <sparkle:shortVersionString>1.1.8</sparkle:shortVersionString>
+         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.1.8/update-package-v1.1.8.zip" sparkle:version="1.1.8" length="59832664" type="application/zip" />
+         <description><![CDATA[
+            <h2>Version 1.1.8 - Update Dialog Instruction Text</h2>
+            <p><strong>Added instruction text to update dialog so users know how to proceed</strong></p>
+            <h3>Bug Fixes:</h3>
+            <ul>
+               <li>Added "Press ENTER to continue, ESC to cancel" instruction text to update dialog</li>
+               <li>Users are no longer confused when buttons aren't visible - clear instructions provided</li>
+               <li>Improved button positioning with forced layout updates</li>
+            </ul>
+            <h3>New Features:</h3>
+            <ul>
+               <li>Added keyboard shortcuts: ENTER to confirm, ESC to cancel</li>
+               <li>Instruction label always visible at bottom of dialog</li>
+               <li>Better button visibility handling with stored panel reference</li>
+            </ul>
+            <h3>Improvements:</h3>
+            <ul>
+               <li>Dialog now provides clear instructions even if buttons aren't visible</li>
+               <li>Keyboard navigation works reliably (Enter/Escape keys)</li>
+               <li>Improved button positioning logic with forced layout updates in OnShown</li>
+               <li>Better user experience - no more confusion about how to proceed</li>
+            </ul>
+            <h3>Technical Details:</h3>
+            <ul>
+               <li>Added instruction label to button panel with keyboard shortcut text</li>
+               <li>Added KeyPreview and KeyDown handlers for Enter/Escape keys</li>
+               <li>Stored buttonPanel reference for reliable access</li>
+               <li>Added forced layout updates in OnShown event to ensure buttons are positioned</li>
+            </ul>
+         ]]></description>
+      </item>
+      <item>
          <title>Version 1.1.7 - Update Dialog Button Fix (Test Release)</title>
          <pubDate>Sun, 17 Nov 2025 18:00:00 +0000</pubDate>
          <sparkle:version>1.1.7</sparkle:version>
