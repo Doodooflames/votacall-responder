@@ -6,7 +6,38 @@
       <description>Updates for Votalink Responder - Hands-free call pickup for Votacall webapp</description>
       <language>en</language>
       <item>
-         <title>Version 1.2.0 - Extension Connection Spam Fix</title>
+         <title>Version 1.2.1 - Content Script Injection Fix</title>
+         <pubDate>Mon, 13 Jan 2025 01:00:00 +0000</pubDate>
+         <sparkle:version>1.2.1</sparkle:version>
+         <sparkle:shortVersionString>1.2.1</sparkle:shortVersionString>
+         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.2.1/update-package-v1.2.1.zip" sparkle:version="1.2.1" length="59834825" type="application/zip" />
+         <description><![CDATA[
+            <h2>Version 1.2.1 - Content Script Injection Fix</h2>
+            <p><strong>Fixed issue where call pickup/hangup couldn't find the correct tab to interact with</strong></p>
+            <h3>Bug Fixes:</h3>
+            <ul>
+               <li>Fixed "Could not establish connection. Receiving end does not exist" error when sending messages to tabs</li>
+               <li>Added automatic content script injection with retry logic - ensures content script is loaded before sending messages</li>
+               <li>Improved tab filtering - only sends messages to valid Votacall tabs (checks for /agent-center or /webphone in URL)</li>
+               <li>Added retry mechanism (up to 3 attempts) with 100ms delays for content script initialization</li>
+            </ul>
+            <h3>Improvements:</h3>
+            <ul>
+               <li>Better error handling for tab communication - automatically injects content script if not ready</li>
+               <li>More reliable call answer/hangup functionality - no longer fails when content script hasn't loaded yet</li>
+               <li>Applied retry logic to both call-answer and call-hangup message handlers</li>
+            </ul>
+            <h3>Technical Details:</h3>
+            <ul>
+               <li>Background script: Added sendMessageWithRetry() function with automatic script injection</li>
+               <li>Uses chrome.scripting.executeScript() to inject content.js if not already loaded</li>
+               <li>Waits 100ms after injection before retrying message send</li>
+               <li>Better tab URL validation to ensure messages only go to valid Votacall pages</li>
+            </ul>
+         ]]></description>
+      </item>
+      <item>
+         <title>Version 1.2.0 - Extension Connection Spam Fix & New Features</title>
          <pubDate>Mon, 13 Jan 2025 00:00:00 +0000</pubDate>
          <sparkle:version>1.2.0</sparkle:version>
          <sparkle:shortVersionString>1.2.0</sparkle:shortVersionString>
