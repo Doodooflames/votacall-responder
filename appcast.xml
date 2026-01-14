@@ -19,6 +19,7 @@
                <li>Added "Export Log" button - Export current event log to a timestamped .txt file</li>
                <li>Implemented log file rotation - Automatically limits log files to 10, deleting older ones</li>
                <li>Added "Run on Startup" feature - Option in Settings to automatically start app on Windows boot</li>
+               <li>Added voice feedback (TTS) - Female voice announces "call active" when call is answered and "call ended" when call is hung up</li>
             </ul>
             <h3>Bug Fixes:</h3>
             <ul>
@@ -42,13 +43,14 @@
             <h3>Technical Details:</h3>
             <ul>
                <li>Background script: Added tab count tracking and debounced updateIdentification() function</li>
-               <li>Content script: Removed redundant WebSocket connection code</li>
+               <li>Content script: Removed redundant WebSocket connection code, added speakCallStatus() function using Web Speech API</li>
                <li>WebSocketHub: Only triggers ClientConnected when tab status changes</li>
                <li>VotalinkResponderService: Extension path detection runs once per session, CleanupOldLogFiles() limits to 10 files</li>
                <li>MainForm: Export Log button saves log content to timestamped .txt file</li>
                <li>SettingsDialog: Run on Startup checkbox with registry management</li>
                <li>Program: SyncStartupRegistry() ensures registry state matches config on startup</li>
                <li>StyledScrollTextBox: Removed forced scroll calls, AppendText() handles scrolling intelligently</li>
+               <li>Extension TTS: Uses Web Speech API (speechSynthesis) with female voice preference, only plays after successful button click verification</li>
             </ul>
          ]]></description>
       </item>

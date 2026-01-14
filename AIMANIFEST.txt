@@ -315,6 +315,12 @@ CHANGELOG (expand as we go)
     - Added "Run on Startup" feature - Option in Settings dialog to automatically start app on Windows boot
       - Uses Windows Registry (HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run)
       - Syncs registry state with config on app startup
+    - Added voice feedback (TTS) for call status - Female voice announces "call active" when ANSWER button is clicked and "call ended" when HANGUP button is clicked
+      - Uses Web Speech API (speechSynthesis) in browser extension
+      - Only plays after air-tight verification: button exists AND is successfully clicked
+      - Prefers female voices (Zira, Samantha, Karen, Susan, etc.)
+      - Voice settings: 80% volume, normal speed, slightly higher pitch (1.1) for more feminine sound
+      - Implementation: content.js → speakCallStatus() function
   * BUG FIXES:
     - Fixed extension connection spam - extension now only connects/updates when Votacall tabs change
     - Background script tab listener now only reacts to Votacall tab changes, not all browser tabs
