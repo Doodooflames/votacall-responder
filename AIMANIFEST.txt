@@ -1,0 +1,791 @@
+PROJECT: VOTACALL HANDS-FREE CALL PICKUP FOR BROWSER WEBAPP
+
+================================================================================
+CRITICAL BUILD INFORMATION (ALWAYS CHECK THIS FIRST)
+================================================================================
+
+⚠️ CRITICAL RELEASE NAMING REQUIREMENT ⚠️
+----------------------------------------
+ALL GitHub releases MUST use this EXACT ZIP file naming scheme:
+  update-package-v{version}.zip
+
+Examples:
+  - update-package-v1.0.0.zip
+  - update-package-v1.0.9.zip
+  - update-package-v2.1.5.zip
+
+DO NOT use any other naming scheme (e.g., VotalinkResponder-v1.0.9.zip).
+
+The auto-updater in UpdateManager.cs specifically looks for ZIP files containing 
+"update-package" in the filename (line 394). If the ZIP file doesn't match this 
+pattern, users will see "Update available but no download package found" error.
+
+When creating releases:
+1. Build the executable
+2. Create ZIP file named: update-package-v{version}.zip
+3. Include: VotalinkResponder.exe + votacall-extension/ folder
+4. Upload to GitHub release with this exact filename
+
+PROJECT FILE LOCATION:
+  Full Path: C:\Users\domin\source\repos\votacall volume script\VotalinkResponder\VotalinkResponder.csproj
+  Relative Path: VotalinkResponder\VotalinkResponder.csproj
+
+BUILD OUTPUT LOCATION (User tests from here - ALWAYS build to this path):
+  Full Path: C:\Users\domin\source\repos\votacall volume script\VotalinkResponder\bin\Release\Standalone-Final\VotalinkResponder.exe
+  Relative Path: VotalinkResponder\bin\Release\Standalone-Final\VotalinkResponder.exe
+
+BUILD COMMAND (run from workspace root):
+  dotnet publish VotalinkResponder\VotalinkResponder.csproj -c Release -r win-x86 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:PublishTrimmed=false -p:DebugType=None -p:DebugSymbols=false -o "VotalinkResponder\bin\Release\Standalone-Final"
+
+⚠️ CRITICAL: ALWAYS BUILD TO STANDALONE EXE FOR TESTING ⚠️
+----------------------------------------
+AFTER MAKING ANY CODE CHANGES OR ADDITIONS, YOU MUST:
+1. ALWAYS rebuild the standalone executable using the BUILD COMMAND above
+2. The user tests from: VotalinkResponder\bin\Release\Standalone-Final\VotalinkResponder.exe
+3. Do NOT assume the user will rebuild - they expect the standalone exe to be updated
+4. If the user asks to test changes, rebuild the standalone exe immediately
+5. The standalone exe is the ONLY way the user can reliably test the application
+
+This is a CRITICAL workflow requirement. The user relies on the standalone executable
+being up-to-date after every code change. Always build to Standalone-Final folder.
+
+IMPORTANT NOTES:
+- The project file is at: VotalinkResponder\VotalinkResponder.csproj (NOT nested)
+- The output folder is: VotalinkResponder\bin\Release\Standalone-Final\ (NOT nested)
+- If dotnet publish creates a nested path, copy the exe to the correct location above
+- User always tests from: VotalinkResponder\bin\Release\Standalone-Final\VotalinkResponder.exe
+- Workspace root: C:\Users\domin\source\repos\votacall volume script\
+
+================================================================================
+
+OWNER NOTES
+- Environment: Windows 10+ shop floor PCs, Yealink WH64 wireless headsets (primary), varied Yealink/EPOS/Plantronics/Jabra models.
+- Goal: Detect headset button events (answer/pickup) while workers are away from keyboard and trigger call answer in the Votacall web app automatically.
+- CRITICAL MOBILITY REQUIREMENT: Workers are mobile, walking around with headsets on. They are NOT always at their PCs. The solution MUST work with wireless/Bluetooth headsets and from any location relative to the PC.
+- Constraints: AHK (AutoHotkey) solutions are inconsistent across models; some headsets do not emit expected keyboard scancodes (SC130, SC12E work for some but not others). Browser tab needs to be focused to receive hotkeys; existing browser extension listens for a hotkey to click the answer button.
+- NEW APPROACH: Use official Yealink Node.js SDK (@yealink_dev/yealink-node-sdk) with RCC (Ring/Call Control) mode to capture hook switch events from WH64 and other compatible Yealink models. This is the correct way to capture button presses from wireless headsets.
+- Previous attempts: AHK for keyboard scancodes (inconsistent), raw node-hid (unreliable), now switching to official SDK.
+
+CURRENT STATE (as of this session)
+- Workspace was empty at open. No existing code checked in here.
+- Browser extension already implemented by owner (not in this repo) listens for hotkeys and clicks the answer button in the Votacall web app.
+- AHK script previously used to convert headset input to keystrokes works only for some users; others do not emit keys at all.
+
+CORE PROBLEM SUMMARY
+- Many headsets do not expose transport controls as keyboard scancodes; instead they speak HID Telephony Usage Page (0x0B) over USB HID (or via vendor layers for Bluetooth). AHK mainly hooks keyboard/mouse and some WM_APPCOMMANDs, not generic HID Telephony usages.
+- Chrome tab hotkey focus is unreliable if the app is backgrounded/minimized. And inconsistent input scancodes prevents uniform AHK triggers.
+
+RECOMMENDATION SNAPSHOT
+- Introduce a local HID Listener (Node.js) using node-hid to subscribe to HID Telephony devices (usagePage 0x0B) and known vendor IDs.
+- Broadcast input reports as structured JSON over ws://127.0.0.1:9230.
+- Update the browser extension to connect to this WebSocket and trigger the answer click when an "answer"-like event is received.
+- Keep AHK as a fallback path for legacy devices that only send keyboard scancodes (optional secondary listener).
+
+ARCHITECTURE OVERVIEW
+- Headset -> USB HID (Telephony Page) -> Node HID Listener (node-hid)
+- Node HID Listener -> WebSocket server (ws) -> Browser Extension (content/background) -> Webapp DOM click on Answer button
+- Permissions: Node runs locally with user privileges; extension has host permission for the webapp domain and connects to ws://127.0.0.1:9230.
+
+WHY NOT ONLY WEBHID?
+- WebHID requires a user-gesture pairing and permission per-device; background operation and auto-reconnect across reboots is not as robust compared to a native daemon. Some devices require vendor/feature reports that are easier with node-hid. Extension UX complexity increases.
+
+DEVICE LANDSCAPE AND IDS (approximate; confirm via enumeration)
+- Yealink (VID 0x2F68) — various headsets/adapters
+- EPOS/Sennheiser (VID 0x1395)
+- Jabra (VID 0x0B0E)
+- Plantronics/Poly (VID 0x047F)
+- Logitech (VID 0x046D) — possible telephony features on some devices
+- Generic telephony usage page devices (usagePage 0x0B) without vendor filter
+
+EVENTS OF INTEREST (HID Telephony Usages)
+- Hook Switch / Call Answer / Call End
+- Flash / Redial / Line Busy (less relevant)
+- Volume Up/Down/Mute (optional for later)
+
+MAPPING STRATEGY
+- Phase 1: Raw event streaming. Broadcast every input report as bytes + timestamp + device identity. Let the extension decide when a report equals "answer". This ensures wide device coverage without guesswork.
+- Phase 2: Add per-device decoder plug-ins as knowledge accrues. Match common patterns for Hook Switch/Answer.
+- Phase 3: Persist learned mappings (JSON config) to recognize events specifically and emit semantic events ("answer").
+
+RELIABILITY STRATEGY
+- Auto-enumerate devices on boot and on device add/remove.
+- Graceful reopen on read error.
+- Heartbeat ping on WebSocket. Extension reconnect with exponential backoff.
+- Minimal CPU/memory footprint; log rate-limited.
+
+SECURITY/PRIVACY
+- Service binds only to 127.0.0.1 by default.
+- No PII; only device descriptors and raw HID reports are transmitted locally.
+
+BROWSER EXTENSION INTEGRATION
+- Connect to ws://127.0.0.1:9230 on startup.
+- When an event arrives, if Votacall webapp is ringing, trigger the existing DOM click routine to answer.
+- Option: Debounce to avoid double-clicks; maintain last-trigger timestamp.
+
+FAILOVER PATHS
+- If no HID device is detected, optionally fall back to keyboard hooks (AHK/other) and keep old hotkey workflow.
+- Optional: Support WM_APPCOMMAND events via a tiny native module for devices that surface as multimedia keys.
+
+TEST PLAN
+- Enumerate and capture raw reports for each headset model in the shop.
+- Verify that pressing the headset answer button emits consistent reports.
+- Confirm the extension receives events even when Chrome is minimized or the tab is backgrounded.
+- Validate that the answer click succeeds across app states (ringing/incoming modal present).
+
+DEPLOYMENT PLAN
+- Ship the Node listener as a lightweight installer or portable folder. Add a Startup shortcut.
+- Provide tray icon (later) for status and device count.
+- Versioned config for device mappings.
+
+KNOWN RISKS
+- Some Bluetooth headsets only expose HID telephony when connected in specific profiles (HFP/HSP) or through a vendor dongle. USB connection recommended for reliability.
+- Vendor-specific feature reports may be needed to unlock hook switch events; initial version streams raw and is vendor-agnostic.
+
+ROLLBACK STRATEGY
+- Keep AHK script and browser hotkey path available as a fallback. The extension can listen to both WS events and hotkeys.
+
+IMPLEMENTATION LOG
+[2025-10-27] Session start; repo empty. Decided to scaffold Node HID listener + WS.
+[2025-10-27] Plan to create files: index.js, README.md; install node-hid, ws; run service.
+
+OPERATIONS NOTES
+- Node.js LTS recommended. On Windows, node-hid uses prebuilt binaries; if build fails, install tools (Windows Build Tools) or use prebuilt releases.
+- Port: 9230 (configurable via HID_WS_PORT env var).
+- Logging: to console; can rotate later.
+
+CONFIGURATION FORMAT (planned)
+- config.json (optional):
+  {
+    "port": 9230,
+    "vendorAllowlist": [11880, 5013, 2830, 1155, 1133],
+    "usagePageAllowlist": [11],
+    "deviceDenylist": []
+  }
+
+EVENT PAYLOAD FORMAT (Phase 1)
+- Example JSON over WebSocket:
+  {
+    "type": "hid-input-report",
+    "at": 1730000000000,
+    "device": {
+      "path": "string",
+      "vendorId": 12112,
+      "productId": 49234,
+      "usagePage": 11,
+      "usage": 1,
+      "manufacturer": "Yealink",
+      "product": "WH62"
+    },
+    "report": {
+      "length": 6,
+      "dataHex": "04-00-00-00-00-00"
+    }
+  }
+
+SEMANTIC EVENT FORMAT (Phase 2+)
+- When known mappings exist:
+  { "type": "telephony", "semantic": "answer", "confidence": 0.9, ... }
+
+BROWSER EXTENSION IMPLEMENTATION (COMPLETED)
+- Location: votacall-extension/ folder in project root
+- Files:
+  - manifest.json: Chrome/Edge extension manifest (Manifest V3)
+  - content.js: Content script that runs on Votacall webapp pages
+  - README.md: Extension documentation
+  - INSTALLATION.md: Step-by-step installation instructions
+  - ICONS.md: Note about placeholder icons (optional)
+
+- Architecture:
+  - Content script injects into https://myvotacall.com/webphone/* pages
+  - Connects to WebSocket server at ws://127.0.0.1:9231/ (VotalinkResponder default port)
+  - Listens for messages with type: "call-answer"
+  - Automatically clicks the ANSWER button when message received
+
+- ANSWER Button Selector (VERY SPECIFIC):
+  - Multi-step verification to avoid clicking dial pad call button:
+    1. Find div containing "Incoming call" text
+    2. Verify panel also contains "ANSWER", "IGNORE", and "REJECT" text
+    3. Find paragraph with exact text "ANSWER"
+    4. Find parent container (MuiBox-root) with that paragraph
+    5. Find button within container that has SVG with data-testid="CallIcon"
+    6. Verify button is visible and clickable before clicking
+  - Retry logic: Checks every 100ms for up to 5 seconds if button not immediately found
+  - This ensures we only click ANSWER in incoming call panel, not dial pad
+
+- WebSocket Connection:
+  - Auto-connects on page load
+  - Exponential backoff reconnection (1s, 2s, 4s, max 5s delay)
+  - Logs all connection events to browser console with [Votalink Extension] prefix
+  - Handles connection errors gracefully
+
+- Testing:
+  - Open browser console (F12) to see extension logs
+  - Verify WebSocket connection message appears
+  - Trigger call and press headset button
+  - Should see "Received call-answer message" and "Found ANSWER button, clicking..."
+
+- Installation:
+  - Load unpacked extension in Chrome/Edge
+  - Enable Developer Mode
+  - Select votacall-extension folder
+  - Extension only activates on myvotacall.com/webphone/* pages
+
+EXTENSION CONSIDERATIONS
+- Reconnect logic to the WS server.
+- Gate answering to only when an incoming call UI is present.
+- Prevent repeated clicks within a short window.
+- Provide a small options page that shows connection status.
+
+TROUBLESHOOTING CHECKLIST
+- If no devices appear: ensure headset is connected via USB; test with another port or vendor dongle.
+- If node-hid install fails: update Node.js, ensure Internet access for prebuilt binaries, or install Windows Build Tools.
+- If reports not received: some devices require opening specific interface numbers; try different devices by path; reduce allowlist to test generic open.
+- If extension not receiving events: check firewall rules; localhost should be allowed. Verify port 9230.
+
+FUTURE IMPROVEMENTS
+- Signed Windows service with auto-start and tray UI.
+- Device-specific plugins (Jabra/EPOS SDK bridges) for richer control (mute sync, on/off-hook sync).
+- WebHID variant of the extension for users not allowed to run native apps.
+
+SESSION TODO SNAPSHOT (mirror of task list)
+- Create verbose AIMANIFEST.txt [this]
+- Initialize Node project and install HID/WebSocket dependencies
+- Implement HID listener service broadcasting events over WebSocket
+- Add README with setup and extension integration steps
+- Run install/build to verify dependencies and boot service
+
+DETAILED DESIGN NOTES (HID LISTENER)
+1) Device Discovery
+   - Use node-hid to enumerate devices.
+   - Filter by usagePage=0x0B where available; otherwise filter by common vendor IDs allowlist.
+   - Track opened devices by path; avoid duplicates.
+   - Listen for add/remove using periodic re-enumeration (e.g., every 5s) in v1.
+
+2) Device Open and Read
+   - Open device via new HID.HID(path) or vendorId+productId+interface.
+   - Subscribe to 'data' event for input reports and 'error' for disconnections.
+   - Package data as hex string bytes for transport.
+
+3) WebSocket Server
+   - Use 'ws' library; bind to 127.0.0.1:9230 by default.
+   - Broadcast payloads to all connected clients.
+   - Implement ping/heartbeat to drop stale clients.
+
+4) Logging & Metrics
+   - Log device attach/detach, open success/failure.
+   - Log first N input reports for each device with rate limiting.
+
+5) Configurable Allowlist
+   - Read optional config.json to tune vendor/usagePage filters.
+
+6) Graceful Shutdown
+   - Close HID handles and WS server on SIGINT.
+
+EXTENSION SIDE PSEUDOCODE
+- On startup:
+  ws = new WebSocket('ws://127.0.0.1:9230');
+  ws.onmessage = (evt) => {
+    const msg = JSON.parse(evt.data);
+    if (msg.type === 'hid-input-report') {
+      if (isIncomingCallVisible() && looksLikeAnswer(msg)) {
+        clickAnswerButton();
+      }
+    }
+  };
+
+- looksLikeAnswer(msg):
+  - For Phase 1: any non-empty report from telephony device may be treated as potential answer upon ringing, debounced 1s.
+  - Later: match known patterns per device.
+
+RISK MITIGATION
+- Keep JSON payloads small and low frequency; only on button press.
+- Use binaryType 'arraybuffer' if needed; v1 uses JSON for readability.
+
+NOTES ON HEADSET MODELS
+- Yealink WH62/WH63: Often expose a HID interface for call control. Expect usagePage 0x0B.
+- EPOS SC 130/SC 12x: Some report as keyboard for volume; answer may be telephony HID or vendor-specific.
+- Inconsistent behavior across models/dongles is precisely why AHK is insufficient.
+
+CHANGELOG (expand as we go)
+- 2025-10-27: Initialized AIMANIFEST and planned architecture; scaffolding Node HID listener.
+- 2025-01-13: Version 1.2.0 - Extension Connection Spam Fix & New Features
+  * NEW FEATURES:
+    - Added "Export Log" button - Export current event log to a timestamped .txt file in same directory as executable
+    - Implemented log file rotation - Automatically limits log files to 10, deleting older ones (CleanupOldLogFiles)
+    - Added "Run on Startup" feature - Option in Settings dialog to automatically start app on Windows boot
+      - Uses Windows Registry (HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run)
+      - Syncs registry state with config on app startup
+  * BUG FIXES:
+    - Fixed extension connection spam - extension now only connects/updates when Votacall tabs change
+    - Background script tab listener now only reacts to Votacall tab changes, not all browser tabs
+    - Fixed log terminal scroll conflict - Log no longer forces scroll to bottom when user is reading older messages
+      - Removed SelectionStart and ScrollToCaret calls from LogMessage()
+      - StyledScrollTextBox.AppendText() now handles scrolling intelligently (only scrolls if user at bottom)
+    - Added debouncing (500ms) to prevent rapid-fire identification updates
+    - Extension path detection now only runs once per session (prevents "Auto-detected extension folder" spam)
+    - Removed redundant content script WebSocket connection (background script handles connection centrally)
+    - WebSocketHub ClientConnected event only triggers when tab status actually changes
+  * IMPROVEMENTS:
+    - Extension now ignores unrelated tab changes (duplicate/close operations on non-Votacall tabs)
+    - Reduced log noise - connection messages only appear when actually relevant
+    - Better connection management - single connection per extension instance
+    - Tab count tracking prevents redundant identification updates
+    - Smart log scrolling - Only auto-scrolls when user is at bottom, preserves scroll position when reading history
+    - Automatic log cleanup - Prevents disk space issues from accumulating log files
+- 2025-01-XX: Extension Auto-Reload Feature
+  * Added automatic extension reload after update files are deployed
+  * C# app sends WebSocket message "extension-updated" to connected extensions
+  * Extension background script listens for update message and calls chrome.runtime.reload()
+  * Shows notification before reloading: "Extension updated! Reloading..."
+  * Extension automatically reconnects after reload
+  * Implementation: UpdateManager.cs → NotifyExtensionsToReload() → MainForm.NotifyExtensionsToReload() → WebSocketHub.Broadcast()
+  * Extension: background.js listens for "extension-updated" message type
+- 2025-01-XX: Voice Feedback for Call Status
+  * Added text-to-speech (TTS) feedback using Web Speech API
+  * Female voice says "call active" when ANSWER button is successfully clicked
+  * Female voice says "call ended" when HANGUP button is successfully clicked
+  * Only plays after air-tight verification: button exists AND is successfully clicked
+  * Voice selection: Prefers female voices (Zira, Samantha, Karen, Susan, etc.)
+  * Falls back to default voice if no female voice available
+  * Implementation: content.js → speakCallStatus() function
+  * Integrated into: call-answer message handler, call-hangup message handler, WebSocket handleMessage
+  * Voice settings: 80% volume, normal speed, slightly higher pitch (1.1) for more feminine sound
+
+IMPLEMENTATION STATUS
+- Pending: Node project init, dependency install, code, run.
+
+ACTION ITEMS FOR NEXT SESSIONS
+- Capture sample reports per device and start mapping common patterns.
+- Add per-device config and semantic event derivation.
+- Update extension to consume WS and wire to DOM click.
+
+END OF MANIFEST BASELINE
+
+---
+
+REFERENCE APPENDIX: HID TELEPHONY USAGES (SUMMARY)
+- Usage Page: 0x0B (Telephony)
+- Common Usages: Hook Switch (0x20), Flash (0x21), Redial (0x24), Phone Mute (0x2F), Call Pickup often maps to Hook Switch press.
+- Actual report descriptors vary per vendor; raw bytes should be captured empirically.
+
+REFERENCE APPENDIX: KNOWN VENDOR IDS (decimal)
+- Yealink: 12136 (0x2F68)
+- EPOS/Sennheiser: 5013 (0x1395)
+- Jabra: 2830 (0x0B0E)
+- Plantronics/Poly: 1151 (0x047F)
+- Logitech: 1133 (0x046D)
+
+REFERENCE APPENDIX: WS MESSAGE EXAMPLES
+- Device attach:
+  { "type": "device-attach", "device": { ... } }
+- Device detach:
+  { "type": "device-detach", "path": "..." }
+- Input report:
+  { "type": "hid-input-report", "device": { ... }, "report": { ... } }
+
+REFERENCE APPENDIX: SERVICE CONFIG VIA ENV
+- HID_WS_PORT: override default port (integer)
+- HID_VENDOR_ALLOWLIST: comma-separated decimal vendor IDs
+- HID_USAGEPAGE_ALLOWLIST: comma-separated decimal usage pages (e.g., 11)
+
+NOTE TO FUTURE SELF
+- Keep this manifest up to date after every change. Do not assume success until user confirms in production tests. Document both successes and failures with concrete device IDs and report samples.
+
+IMPLEMENTATION STATUS
+[2025-10-27 - PREVIOUS] Attempted raw HID approach with node-hid
+  - Encountered Windows HID access blocking issues
+  - Keyboard/mouse not accessible via node-hid
+  
+[2025-10-27 - CURRENT] Switching to official Yealink Node.js SDK
+  - Using @yealink_dev/yealink-node-sdk package (npm)
+  - RCC (Ring/Call Control) mode for hook switch detection
+  - WH64 headset in hand, ready for testing
+  - Simplified approach: SDK handles all Yealink device communication
+  - Service broadcasts events over ws://127.0.0.1:9230
+
+TEST RESULTS
+- Keyboard/Mouse: blocked by Windows ("could not read from HID device")
+- PS5 controller detected but no events readable (same blocking)
+- RODE mic detected with usagePage 11 (telephony) - no button events yet
+- GENERAL ISSUE: Windows blocking raw HID input access via node-hid
+- Need to test with actual Yealink/EPOS headsets in production - may require different approach
+- Alternative: Consider WM_APPCOMMAND detection or keyboard hotkey fallback for extension
+
+CURRENT TESTING STATUS (Latest Session)
+- Volume buttons ARE being detected (via WM_APPCOMMAND or Raw Input HID)
+- Call/Answer/Teams button NOT detected yet - NEEDS ISOLATION
+- Yealink SDK approach ABANDONED - requires developer AppID from Yealink (cannot obtain)
+- FOCUS: C# Raw Input service (wm-listener) is the viable path - capturing HID hex codes
+- Enhanced C# service with:
+  * File logging - all HID reports saved to hid-log-YYYYMMDD-HHMMSS.txt
+  * Device type identification (Yealink, EPOS, Jabra, etc.)
+  * Byte-by-byte analysis of each HID report
+  * Press/Release state detection
+  * HID device enumeration at startup (via WMI) to list all VID/PID combos
+  * Multiple usage page registration (0x0C Consumer, 0x0B Telephony, 0x01 Generic Desktop, 0x0D Digitizers, 0xFF00 Vendor) — scaled back to valid combos to avoid ERROR_INVALID_PARAMETER (87)
+  * Special highlighting for telephony devices (usagePage 0x0B) and Yealink devices (vendor 0x2F68)
+  * Keyboard scancode logging (captures WM_KEYDOWN/WM_KEYUP for SC130/SC12E etc.)
+  * Detects if registration fails and logs Win32 error
+  * Direct HID reader (SetupAPI + CreateFile) streaming input reports for target vendors (Yealink 0x6993/0x2F68, Jabra 0x19F7, Plantronics 0x048D, etc.)
+    - Broadcasts `type="direct-hid"` messages over WS and logs `[HID-DIRECT]` entries with raw bytes
+  * Graceful shutdown: direct HID monitor now cancels IO on dispose (CancelIoEx + Task wait) so devices are released and the busy light returns to idle after exit
+  * Fixed SetupDi device-path handling (`\\?foo` / `\\??\\foo`) so CreateFile opens Yealink interfaces instead of throwing Win32 123
+  * Incremental Raw Input registration with per-page success/failure logging
+
+BLOCKERS / OBSERVATIONS
+- After expanding registrations too broadly we hit Win32 error 87; fixed by reverting to validated page combinations
+- Even with Raw Input + WM_APPCOMMAND + keyboard scancodes, the call button remains silent → likely intercepted by vendor driver
+- Yealink base exposes multiple HID interfaces (see enumeration) but not all allow Raw Input events
+- Next step: open the Yealink HID interface directly via SetupAPI + CreateFile to read input reports bypassing Raw Input filters
+- Alternative: Use libyealinkusbsdk.dll exported APIs (may not require official AppID) or interface with Yealink USB Connect softphone bridge
+
+NEXT ACTION IDEAS
+- Implement SetupAPI enumeration to get device paths (GUID_DEVINTERFACE_HID) and call ReadFile on the interface suspected to carry call events
+- Inspect libyealinkusbsdk.dll exports with dumpbin to identify possible functions (e.g., YLUsb_Init, YLUsb_RegBtnCallback) for P/Invoke
+- Investigate Teams integration: some headsets send HID Telephony events only when Teams is the active softphone (maybe set default softphone via Yealink Connect)
+- Try toggling Yealink USB Connect settings (enable "3rd-party calling control") while our listener runs
+
+LOG SPACE (add as we test)
+[ ] Device samples to capture:
+    - Yealink WH64 with base station - PRIMARY TARGET
+    - Yealink SC130 (volume up/down keys; inconsistent behavior reported)
+    - Yealink SC12E (similar volume control issues)
+    - Need to map actual answer button events for headsets
+    
+YEALINK WH64 DETAILS:
+- Base station connects via USB to PC
+- Wireless headset with answer/hangup buttons
+- Button presses on headset should trigger HID reports via base
+- Expected vendor ID: 0x2F68 (12136 decimal) for Yealink
+- Test plan: Press answer button while away from PC, capture report
+
+YEALINK SDK DISCOVERY:
+- Yealink offers "Yealink USB SDK for Windows" (libyealinkusbsdk.dll)
+- Currently used with WH62/WH63 models for button event capture
+- May work with WH64 (needs testing)
+- SDK provides call control APIs including hook switch detection
+- If node-hid fails, this SDK is the fallback path
+- Volume buttons working in Windows proves some pathway exists (HID or SDK)
+- RESEARCH NEEDED: Download Yealink USB SDK and integrate with Node.js via native addon or separate service
+    
+TESTING PLAN (UPDATED - Focus on HID Hex Codes):
+1. Connect actual telephony headset to USB (BASE STATION for wireless headsets)
+2. Run C# Raw Input service ONLY:
+   - C#: wm-listener\bin\Release\net6.0-windows\WmListener.exe (port 9231)
+   - This service captures ALL HID hex codes and logs to file
+3. Press ALL buttons on WIRELESS HEADSET (volume up/down, call/answer, mute, etc.)
+4. Watch console output for HID reports - each shows:
+   - Vendor ID and Product ID (hex and decimal)
+   - Device type (YEALINK, EPOS, etc.)
+   - Usage Page (especially 0x0B for telephony)
+   - Full hex data string (e.g., "01-01-00-00-00-00")
+   - Byte-by-byte breakdown
+   - Press/Release state
+5. Check the log file: hid-log-YYYYMMDD-HHMMSS.txt in the same directory as the exe
+6. Look for patterns:
+   - [TELEPHONY-HID] markers - usagePage 0x0B (most likely call button)
+   - [YEALINK-HID] markers - vendor 0x2F68 (Yealink devices)
+   - Different hex patterns between volume buttons (already known: "01-01" = vol up, "01-02" = vol down)
+   - Press events vs Release events (press = new hex, release = same hex repeated)
+7. Document the EXACT hex pattern for call button (vendor, product, usagePage, dataHex)
+8. Once identified, add mapping logic to trigger answer action
+
+CRITICAL: Call button hex code will appear as:
+- Raw HID report with usagePage 0x0B (telephony) - MOST LIKELY
+- OR usagePage 0x0C (consumer) with different pattern than volume
+- OR WM_APPCOMMAND with different command number
+- Different hex pattern than volume buttons (01-01, 01-02)
+
+CONSIDERATIONS FOR BASE STATION + WIRELESS HEADSETS:
+1. Button events on wireless headset should be relayed through base station to PC
+2. Base station appears as USB HID device to Windows
+3. Remote button presses should trigger HID input reports
+4. May need to capture both press and release events
+5. Latency: Wireless transmission adds delay, but should still work
+6. Some bases may use vendor-specific protocols instead of generic HID
+7. Test with headset at various distances to verify reliability
+
+BUILD AND DEPLOYMENT INFORMATION:
+- Project: VotalinkResponder (C# Windows Forms application)
+- Target Framework: .NET 6.0 Windows (net6.0-windows)
+- Platform: x86 (32-bit)
+- Runtime: Self-contained (includes .NET runtime)
+
+STANDALONE EXECUTABLE BUILD:
+- **IMPORTANT: User tests using this specific location - ALWAYS build/publish here:**
+  Full Path: C:\Users\domin\source\repos\votacall volume script\VotalinkResponder\bin\Release\Standalone-Final\VotalinkResponder.exe
+  Relative Path: VotalinkResponder\bin\Release\Standalone-Final\VotalinkResponder.exe
+  
+- Build Command (run from workspace root):
+  dotnet publish VotalinkResponder\VotalinkResponder.csproj -c Release -r win-x86 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:PublishTrimmed=false -p:DebugType=None -p:DebugSymbols=false -o "VotalinkResponder\bin\Release\Standalone-Final"
+  
+- NOTE: The publish command may create a nested path (VotalinkResponder\VotalinkResponder\bin\...). If this happens, copy the exe from the nested location to the correct location above.
+
+- Build Properties:
+  * PublishSingleFile=true: Bundles all managed assemblies into single EXE
+  * SelfContained=true: Includes .NET runtime (no need for .NET installed on target machine)
+  * IncludeNativeLibrariesForSelfExtract=true: Extracts native libraries to temp folder at runtime (required for Windows Forms)
+  * EnableCompressionInSingleFile=true: Compresses the bundle to reduce file size
+  * PublishTrimmed=false: Keeps all code (no trimming) for reliability
+  * DebugSymbols=false: No PDB file for smaller distribution size
+
+- Distribution Requirements:
+  * Only need to distribute: VotalinkResponder.exe (single file)
+  * No external DLL files required
+  * No .NET runtime installation required on target machine
+  * Native libraries auto-extracted to temp folder at runtime (transparent to user)
+  * Works on Windows 10+ (x86 or x64 - x86 runs on both)
+
+EXTENSION REPLY DIAGNOSTICS:
+- Extension sends reply messages back to main app when call-answer command is received
+- Reply includes: success (bool), message (string), timestamp, originalData
+- Flow: Content Script → Background Script → WebSocket Server → VotalinkResponderService → MainForm Log
+- Debug Console Window: Added "🐛 Debug Console" button in main app to show all WebSocket messages
+- Debug Console auto-opens when call-answer-reply messages are detected
+- All WebSocket messages are logged to Debug Console for troubleshooting
+- Reply messages appear in main app Event Log as: [EXTENSION] ⚠ Reply from extension (ID: ...): [message]
+- Successfully tested and working as of 2025-11-12
+
+- Alternative Build (with debug symbols):
+  * Location: VotalinkResponder\bin\Release\Standalone\VotalinkResponder.exe
+  * Includes PDB file for debugging purposes
+  * Use Standalone-Final version for production distribution
+
+- Notes:
+  * Windows Forms applications require native library extraction (cannot be fully embedded)
+  * Extraction happens automatically to %TEMP% folder when app runs
+  * User does not need to manually extract or distribute any DLL files
+  * Single EXE file is all that's needed for deployment
+
+DIAGNOSTIC IMPROVEMENTS (Latest Update):
+- Enhanced HID device monitoring with detailed logging
+- Heartbeat messages every 10 seconds when no data received (helps identify if device is idle vs. not sending data)
+- Detailed error messages for common access issues:
+  * ERROR_ACCESS_DENIED - Another app has exclusive access (Yealink USB Connect, Teams)
+  * ERROR_SHARING_VIOLATION - Device in use by another application
+  * ERROR_FILE_NOT_FOUND - Device disconnected
+- Read-only fallback: If write access is denied, tries read-only mode
+- Usage page logging: Shows which HID usage page each interface uses (0x0B=Telephony, 0x0C=Consumer, etc.)
+- Report counting: Tracks how many input reports received from each device
+- Detailed logging when reports are received (shows hex data)
+
+TROUBLESHOOTING: WH64 Softphone Mode - No Button Events
+- Issue: WH64 headset in softphone mode, interface selected in setup, but no button presses detected
+- Possible Causes:
+  1. Wrong interface selected - Try all interfaces shown in Setup wizard
+  2. Yealink USB Connect has exclusive access - Close it before running VotalinkResponder
+  3. Microsoft Teams has exclusive access - Close Teams before running
+  4. Softphone mode requires initialization - Some Yealink devices need feature reports to enable button events
+  5. Interface doesn't handle button events - Some interfaces are for diagnostics only, not button input
+- Diagnostic Steps:
+  1. Check Event Log in VotalinkResponder - Look for:
+     * "[HID-DIRECT] ✓ Successfully opened device" - Device opened OK
+     * "[HID-DIRECT] ⚠ No data received yet" - Device opened but no reports coming through
+     * "[HID-DIRECT] ✗ Failed to open" - Access denied or device in use
+  2. Try all interfaces shown in Setup wizard - Test each one individually
+  3. Check Usage Page in logs:
+     * UsagePage=0x0B (Telephony) - Most likely for call button
+     * UsagePage=0x0C (Consumer) - Usually volume controls
+  4. Close Yealink USB Connect and Teams before testing
+  5. Try unplugging and replugging USB base station
+  6. Check if volume buttons work - If volume buttons work but call button doesn't, it's likely the wrong interface
+- Next Steps if Still Not Working:
+  * May need to send feature reports to enable button events in softphone mode
+  * May need to use Yealink SDK (libyealinkusbsdk.dll) instead of raw HID
+  * May need to check Yealink USB Connect settings (enable "3rd-party calling control")
+
+================================================================================
+AUTO-UPDATE SYSTEM (NetSparkle Integration)
+================================================================================
+
+UPDATE FRAMEWORK: NetSparkleUpdater.SparkleUpdater v2.1.0
+- Library: NetSparkleUpdater.SparkleUpdater (NuGet package)
+- Update Source: GitHub Releases (public repository)
+- Update Check Interval: Every 30 minutes (automatic)
+- Manual Check: "Check for Updates" button in Settings panel
+
+CONFIGURATION:
+- GitHub Repository URL: Hardcoded in UpdateManager.cs
+  * Repository: https://github.com/Doodooflames/votacall-responder
+  * Public repository, no authentication needed for reading releases
+- Extension Folder Path: Stored in AppConfig.ExtensionFolderPath
+  * Used to update browser extension files after app update
+  * User must configure this path in Settings panel
+
+UPDATE PROCESS:
+1. App checks GitHub Releases API for latest version
+2. Compares with current app version (from AssemblyInfo)
+3. If update available, shows NetSparkle update dialog
+4. User can choose to install or skip
+5. If installed:
+   a. Downloads update package (ZIP file)
+   b. Extracts package to temp folder
+   c. Updates extension folder (if configured)
+   d. Restarts app with new version
+
+UPDATE PACKAGE STRUCTURE (ZIP file):
+- VotalinkResponder.exe (new version)
+- extension/ (folder containing browser extension files)
+  * manifest.json
+  * background.js
+  * content.js
+  * popup.html, popup.js
+  * icons (icon16.png, icon48.png, icon128.png)
+  * Any other extension files
+
+NETSPARKLE APPCAST REQUIREMENTS:
+- NetSparkle expects an "appcast.xml" file in the GitHub repository
+- Appcast file is accessible at: https://raw.githubusercontent.com/Doodooflames/votacall-responder/main/appcast.xml
+- Current appcast.xml is empty (no releases yet) - this is normal for initial setup
+- Appcast format: NetSparkle XML format (see NetSparkle documentation)
+- When adding releases, add <item> entries to appcast.xml with version, download URL, and release notes
+
+================================================================================
+GITHUB RELEASE PROCEDURE (FOR AI MODELS AND DEVELOPERS)
+================================================================================
+
+PREREQUISITES:
+1. GitHub CLI (gh) must be installed and authenticated
+   - Install: winget install GitHub.cli (or download from github.com/cli/cli)
+   - Authenticate: Run `gh auth login` in terminal
+   - Verify: `gh auth status` should show authenticated user
+
+2. Repository must be public (or use GitHub token for private repos)
+   - App reads public releases without authentication
+   - Only publishing requires authentication (via gh CLI)
+
+RELEASE STEPS (STRICT PROCEDURE):
+
+STEP 1: Build the Standalone Executable
+----------------------------------------
+From workspace root, run:
+  dotnet publish VotalinkResponder\VotalinkResponder.csproj -c Release -r win-x86 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:PublishTrimmed=false -p:DebugType=None -p:DebugSymbols=false -o "VotalinkResponder\bin\Release\Standalone-Final"
+
+Verify the exe exists at:
+  VotalinkResponder\bin\Release\Standalone-Final\VotalinkResponder.exe
+
+STEP 2: Prepare Extension Files
+---------------------------------
+Copy the entire votacall-extension/ folder contents to a temporary location.
+This will be included in the update package.
+
+Required extension files:
+  - manifest.json
+  - background.js
+  - content.js
+  - popup.html
+  - popup.js
+  - icon16.png, icon48.png, icon128.png
+  - Any other files in the extension folder
+
+STEP 3: Create Update Package (ZIP)
+------------------------------------
+Create a ZIP file with this structure:
+  update-package-v{version}.zip
+    ├── VotalinkResponder.exe (from Standalone-Final)
+    └── extension/
+        ├── manifest.json
+        ├── background.js
+        ├── content.js
+        ├── popup.html
+        ├── popup.js
+        └── [all other extension files]
+
+Example PowerShell command:
+  $version = "1.0.0"
+  $zipPath = "update-package-v$version.zip"
+  $tempDir = New-TemporaryFile | ForEach-Object { Remove-Item $_; New-Item -ItemType Directory -Path $_ }
+  Copy-Item "VotalinkResponder\bin\Release\Standalone-Final\VotalinkResponder.exe" -Destination $tempDir
+  New-Item -ItemType Directory -Path "$tempDir\extension"
+  Copy-Item "votacall-extension\*" -Destination "$tempDir\extension" -Recurse
+  Compress-Archive -Path "$tempDir\*" -DestinationPath $zipPath -Force
+  Remove-Item $tempDir -Recurse
+
+STEP 4: Update appcast.xml
+---------------------------
+The appcast.xml file already exists in the repository root.
+For each new release, add a new <item> entry to appcast.xml:
+
+Appcast item format (add inside <channel>):
+  <item>
+    <title>Version {version}</title>
+    <pubDate>{RFC822 date}</pubDate>
+    <sparkle:version>{version}</sparkle:version>
+    <sparkle:shortVersionString>{version}</sparkle:shortVersionString>
+    <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v{version}/update-package-v{version}.zip"
+               sparkle:version="{version}"
+               type="application/zip"/>
+    <description><![CDATA[
+      {Release notes in HTML format}
+    ]]></description>
+  </item>
+
+IMPORTANT: 
+- Add new <item> entries at the TOP of the <channel> (most recent first)
+- Update appcast.xml in the repository with each new release
+- Commit and push the updated appcast.xml after creating the GitHub release
+
+STEP 5: Create GitHub Release
+------------------------------
+Using GitHub CLI (gh), create a release:
+
+  gh release create v{version} update-package-v{version}.zip --title "Version {version}" --notes "{Release notes}"
+
+Example:
+  gh release create v1.0.0 update-package-v1.0.0.zip --title "Version 1.0.0" --notes "Initial release with auto-update support"
+
+Alternative (if not using gh CLI):
+1. Go to GitHub repository → Releases → "Draft a new release"
+2. Tag version: v{version} (e.g., v1.0.0)
+3. Release title: "Version {version}"
+4. Description: Release notes
+5. Attach update-package-v{version}.zip as a binary
+6. Publish release
+
+STEP 6: Update appcast.xml in Repository
+----------------------------------------
+After creating the release, update the appcast.xml file in the repository:
+1. Add new <item> entry for the new version
+2. Set the download URL to the GitHub release asset
+3. Commit and push the updated appcast.xml
+
+Example git commands:
+  git add appcast.xml
+  git commit -m "Update appcast.xml for version {version}"
+  git push
+
+STEP 7: Verify Release
+-----------------------
+1. Check GitHub Releases page - new release should be visible
+2. Verify appcast.xml is accessible at: https://github.com/Doodooflames/votacall-responder/appcast.xml
+3. Test update in app:
+   - Click "Check for Updates" button in Settings
+   - Should detect new version and offer to install
+
+VERSION NUMBERING:
+- Use Semantic Versioning: MAJOR.MINOR.PATCH (e.g., 1.0.0, 1.0.1, 1.1.0)
+- Version is read from AssemblyInfo (AssemblyVersion attribute)
+- Update AssemblyInfo.cs or .csproj file before building release
+
+AUTOMATION NOTES:
+- Consider creating a PowerShell script to automate steps 1-5
+- Script should:
+  * Build the executable
+  * Create ZIP package with extension files
+  * Generate/update appcast.xml
+  * Create GitHub release via gh CLI
+  * Commit and push appcast.xml update
+
+TROUBLESHOOTING:
+- If update not detected: Check appcast.xml URL is correct and accessible
+- If download fails: Verify GitHub release asset URL is correct
+- If extension not updated: Check ExtensionFolderPath is configured correctly
+- If app crashes after update: Check that all required files are in ZIP package
+
+SECURITY CONSIDERATIONS:
+- NetSparkle uses Ed25519 signatures for update verification
+- Appcast.xml should be signed (see NetSparkle documentation for signing)
+- For now, using Strict security mode (requires valid signature)
+- Future: Generate signing key and sign all updates
+
+================================================================================

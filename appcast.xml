@@ -12,12 +12,19 @@
          <sparkle:shortVersionString>1.2.0</sparkle:shortVersionString>
          <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.2.0/update-package-v1.2.0.zip" sparkle:version="1.2.0" length="59834212" type="application/zip" />
          <description><![CDATA[
-            <h2>Version 1.2.0 - Extension Connection Spam Fix</h2>
-            <p><strong>Fixed excessive connection messages when duplicating/closing unrelated tabs</strong></p>
+            <h2>Version 1.2.0 - Extension Connection Spam Fix & New Features</h2>
+            <p><strong>Fixed excessive connection messages and added log management features</strong></p>
+            <h3>New Features:</h3>
+            <ul>
+               <li>Added "Export Log" button - Export current event log to a timestamped .txt file</li>
+               <li>Implemented log file rotation - Automatically limits log files to 10, deleting older ones</li>
+               <li>Added "Run on Startup" feature - Option in Settings to automatically start app on Windows boot</li>
+            </ul>
             <h3>Bug Fixes:</h3>
             <ul>
                <li>Fixed extension connection spam - extension now only connects/updates when Votacall tabs change</li>
                <li>Background script tab listener now only reacts to Votacall tab changes, not all browser tabs</li>
+               <li>Fixed log terminal scroll conflict - Log no longer forces scroll to bottom when user is reading older messages</li>
                <li>Added debouncing (500ms) to prevent rapid-fire identification updates</li>
                <li>Extension path detection now only runs once per session (prevents "Auto-detected extension folder" spam)</li>
                <li>Removed redundant content script WebSocket connection (background script handles connection centrally)</li>
@@ -29,13 +36,19 @@
                <li>Reduced log noise - connection messages only appear when actually relevant</li>
                <li>Better connection management - single connection per extension instance</li>
                <li>Tab count tracking prevents redundant identification updates</li>
+               <li>Smart log scrolling - Only auto-scrolls when user is at bottom, preserves scroll position when reading history</li>
+               <li>Automatic log cleanup - Prevents disk space issues from accumulating log files</li>
             </ul>
             <h3>Technical Details:</h3>
             <ul>
                <li>Background script: Added tab count tracking and debounced updateIdentification() function</li>
                <li>Content script: Removed redundant WebSocket connection code</li>
                <li>WebSocketHub: Only triggers ClientConnected when tab status changes</li>
-               <li>VotalinkResponderService: Extension path detection runs once per session</li>
+               <li>VotalinkResponderService: Extension path detection runs once per session, CleanupOldLogFiles() limits to 10 files</li>
+               <li>MainForm: Export Log button saves log content to timestamped .txt file</li>
+               <li>SettingsDialog: Run on Startup checkbox with registry management</li>
+               <li>Program: SyncStartupRegistry() ensures registry state matches config on startup</li>
+               <li>StyledScrollTextBox: Removed forced scroll calls, AppendText() handles scrolling intelligently</li>
             </ul>
          ]]></description>
       </item>
