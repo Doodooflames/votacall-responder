@@ -6,6 +6,40 @@
       <description>Updates for Votalink Responder - Hands-free call pickup for Votacall webapp</description>
       <language>en</language>
       <item>
+         <title>Version 1.2.0 - Extension Connection Spam Fix</title>
+         <pubDate>Mon, 13 Jan 2025 00:00:00 +0000</pubDate>
+         <sparkle:version>1.2.0</sparkle:version>
+         <sparkle:shortVersionString>1.2.0</sparkle:shortVersionString>
+         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.2.0/update-package-v1.2.0.zip" sparkle:version="1.2.0" length="59834212" type="application/zip" />
+         <description><![CDATA[
+            <h2>Version 1.2.0 - Extension Connection Spam Fix</h2>
+            <p><strong>Fixed excessive connection messages when duplicating/closing unrelated tabs</strong></p>
+            <h3>Bug Fixes:</h3>
+            <ul>
+               <li>Fixed extension connection spam - extension now only connects/updates when Votacall tabs change</li>
+               <li>Background script tab listener now only reacts to Votacall tab changes, not all browser tabs</li>
+               <li>Added debouncing (500ms) to prevent rapid-fire identification updates</li>
+               <li>Extension path detection now only runs once per session (prevents "Auto-detected extension folder" spam)</li>
+               <li>Removed redundant content script WebSocket connection (background script handles connection centrally)</li>
+               <li>WebSocketHub ClientConnected event only triggers when tab status actually changes</li>
+            </ul>
+            <h3>Improvements:</h3>
+            <ul>
+               <li>Extension now ignores unrelated tab changes (duplicate/close operations on non-Votacall tabs)</li>
+               <li>Reduced log noise - connection messages only appear when actually relevant</li>
+               <li>Better connection management - single connection per extension instance</li>
+               <li>Tab count tracking prevents redundant identification updates</li>
+            </ul>
+            <h3>Technical Details:</h3>
+            <ul>
+               <li>Background script: Added tab count tracking and debounced updateIdentification() function</li>
+               <li>Content script: Removed redundant WebSocket connection code</li>
+               <li>WebSocketHub: Only triggers ClientConnected when tab status changes</li>
+               <li>VotalinkResponderService: Extension path detection runs once per session</li>
+            </ul>
+         ]]></description>
+      </item>
+      <item>
          <title>Version 1.1.9 - Test Release</title>
          <pubDate>Sun, 17 Nov 2025 20:00:00 +0000</pubDate>
          <sparkle:version>1.1.9</sparkle:version>
