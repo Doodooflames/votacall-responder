@@ -6,6 +6,40 @@
       <description>Updates for Votalink Responder - Hands-free call pickup for Votacall webapp</description>
       <language>en</language>
       <item>
+         <title>Version 1.2.2 - Extension Reload Timing Fix</title>
+         <pubDate>Mon, 13 Jan 2025 02:00:00 +0000</pubDate>
+         <sparkle:version>1.2.2</sparkle:version>
+         <sparkle:shortVersionString>1.2.2</sparkle:shortVersionString>
+         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.2.2/update-package-v1.2.2.zip" sparkle:version="1.2.2" length="59837661" type="application/zip" />
+         <description><![CDATA[
+            <h2>Version 1.2.2 - Extension Reload Timing Fix</h2>
+            <p><strong>Fixed extension reload timing to occur after application restart, not during update download</strong></p>
+            <h3>Bug Fixes:</h3>
+            <ul>
+               <li>Fixed extension reload triggering prematurely - now occurs after the new application version starts, not during update download</li>
+               <li>Extension reload now properly waits for application restart before triggering</li>
+               <li>Improved PWA handling - PWAs are no longer automatically closed; user must close and restart them manually</li>
+               <li>Regular browser tabs are automatically closed and reopened during extension reload</li>
+            </ul>
+            <h3>Improvements:</h3>
+            <ul>
+               <li>Extension reload now happens at the correct time - after new files are installed and application restarts</li>
+               <li>Better user experience - notification shown for PWA windows that need manual restart</li>
+               <li>Automatic tab reload for regular browser tabs - seamless update experience</li>
+               <li>Uses flag file system to track pending extension reloads across application restarts</li>
+            </ul>
+            <h3>Technical Details:</h3>
+            <ul>
+               <li>UpdateManager: Removed premature NotifyExtensionsToReload() call from UpdateExtensionFolderAsync</li>
+               <li>Added MarkExtensionReloadPending(), IsExtensionReloadPending(), ClearExtensionReloadPending() methods</li>
+               <li>MainForm: Added CheckAndHandleExtensionReload() on application load to check for pending reloads</li>
+               <li>Background script: Added reloadVotacallTabsAndPWAs() function to handle tab/PWA management</li>
+               <li>PWA windows are detected but left open - user must close and restart manually</li>
+               <li>Regular tabs are automatically closed and reopened with their original URLs</li>
+            </ul>
+         ]]></description>
+      </item>
+      <item>
          <title>Version 1.2.1 - Content Script Injection Fix</title>
          <pubDate>Mon, 13 Jan 2025 01:00:00 +0000</pubDate>
          <sparkle:version>1.2.1</sparkle:version>
