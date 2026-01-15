@@ -6,6 +6,39 @@
       <description>Updates for Votalink Responder - Hands-free call pickup for Votacall webapp</description>
       <language>en</language>
       <item>
+         <title>Version 1.2.3 - Bring Tab to Front on Call</title>
+         <pubDate>Mon, 13 Jan 2025 03:00:00 +0000</pubDate>
+         <sparkle:version>1.2.3</sparkle:version>
+         <sparkle:shortVersionString>1.2.3</sparkle:shortVersionString>
+         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.2.3/update-package-v1.2.3.zip" sparkle:version="1.2.3" length="59838515" type="application/zip" />
+         <description><![CDATA[
+            <h2>Version 1.2.3 - Bring Tab to Front on Call</h2>
+            <p><strong>Added option to bring Votacall tab/PWA to front when call is answered, with support for minimized windows</strong></p>
+            <h3>New Features:</h3>
+            <ul>
+               <li>Added "Bring tab to front on call" checkbox in extension popup settings</li>
+               <li>When enabled, automatically brings Votacall tab or PWA window to front when call key is pressed</li>
+               <li>Properly handles minimized windows - restores them before bringing to front</li>
+               <li>Works for both regular browser tabs and PWA windows</li>
+               <li>Preference is saved locally and persists across extension reloads</li>
+            </ul>
+            <h3>Improvements:</h3>
+            <ul>
+               <li>Better user experience - users can see the call interface immediately when answering</li>
+               <li>User-configurable - can be disabled if user prefers not to have tabs brought to front</li>
+               <li>Default behavior is enabled for convenience</li>
+            </ul>
+            <h3>Technical Details:</h3>
+            <ul>
+               <li>Background script: Checks user preference before bringing tabs to front</li>
+               <li>Uses chrome.tabs.update() to activate tabs and chrome.windows.update() to focus windows</li>
+               <li>Detects minimized windows and restores them using state: 'normal' before focusing</li>
+               <li>Preference stored in chrome.storage.local as 'bringToFront' (default: true)</li>
+               <li>Popup: Added checkbox UI element with immediate save on toggle</li>
+            </ul>
+         ]]></description>
+      </item>
+      <item>
          <title>Version 1.2.2 - Extension Reload Timing Fix</title>
          <pubDate>Mon, 13 Jan 2025 02:00:00 +0000</pubDate>
          <sparkle:version>1.2.2</sparkle:version>
