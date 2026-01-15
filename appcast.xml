@@ -6,6 +6,41 @@
       <description>Updates for Votalink Responder - Hands-free call pickup for Votacall webapp</description>
       <language>en</language>
       <item>
+         <title>Version 1.2.4 - TTS Voice Selection & Easter Eggs</title>
+         <pubDate>Mon, 13 Jan 2025 04:00:00 +0000</pubDate>
+         <sparkle:version>1.2.4</sparkle:version>
+         <sparkle:shortVersionString>1.2.4</sparkle:shortVersionString>
+         <enclosure url="https://github.com/Doodooflames/votacall-responder/releases/download/v1.2.4/update-package-v1.2.4.zip" sparkle:version="1.2.4" length="59840256" type="application/zip" />
+         <description><![CDATA[
+            <h2>Version 1.2.4 - TTS Voice Selection & Easter Eggs</h2>
+            <p><strong>Added voice selection dropdown with customizable TTS voices and humorous easter eggs</strong></p>
+            <h3>New Features:</h3>
+            <ul>
+               <li>Added "TTS Voice" dropdown in extension popup settings</li>
+               <li>Users can now select from all available system TTS voices</li>
+               <li>Voice preference is saved locally and persists across extension reloads</li>
+               <li>Default option maintains auto-selection of female voice (existing behavior)</li>
+               <li>Added two humorous fart sound options as easter eggs (💨 Fart Sound #1 and #2)</li>
+            </ul>
+            <h3>Improvements:</h3>
+            <ul>
+               <li>Better customization - users can choose their preferred TTS voice</li>
+               <li>Voice list automatically populated from browser's available voices</li>
+               <li>Fallback to common Windows voices if Votacall tab is not open</li>
+               <li>Test TTS button now uses the selected voice/sound</li>
+            </ul>
+            <h3>Technical Details:</h3>
+            <ul>
+               <li>Content script: Added get-voices message handler to return available TTS voices</li>
+               <li>Content script: Updated speakCallStatus() to check for selected voice preference</li>
+               <li>Content script: Added playFartSound() function using Web Audio API for sound generation</li>
+               <li>Popup: Added voice selection dropdown with dynamic voice loading</li>
+               <li>Preference stored in chrome.storage.local as 'selectedVoice' (default: 'default')</li>
+               <li>Fart sounds generated programmatically using noise-based synthesis</li>
+            </ul>
+         ]]></description>
+      </item>
+      <item>
          <title>Version 1.2.3 - Bring Tab to Front on Call</title>
          <pubDate>Mon, 13 Jan 2025 03:00:00 +0000</pubDate>
          <sparkle:version>1.2.3</sparkle:version>
